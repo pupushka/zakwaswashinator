@@ -37,6 +37,7 @@ void app_main (void)
   setenv("TZ", "EST-2", 1);
   tzset();
 
+
   gpio_set_level (LIGHT_PWM, 1);
   gpio_set_level (SWITCH_2, 0);
   gpio_set_level (SWITCH_3, 0);
