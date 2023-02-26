@@ -15,6 +15,11 @@
 #include "wifi_sta.h"
 
 #include <sntp.h>
+#include "lwip/err.h"
+#include "lwip/sockets.h"
+#include "lwip/sys.h"
+#include <lwip/netdb.h>
+#include "tcp_ip_server.h"
 
 float measTemp (void);
 
@@ -37,6 +42,10 @@ void app_main (void)
   setenv("TZ", "EST-2", 1);
   tzset();
 
+  ESP_ERROR_CHECK(nvs_flash_init());
+  ESP_ERROR_CHECK(esp_netif_init());
+  ESP_ERROR_CHECK(esp_event_loop_create_default());
+
 
   gpio_set_level (LIGHT_PWM, 1);
   gpio_set_level (SWITCH_2, 0);
@@ -54,6 +63,8 @@ void app_main (void)
   SSD1306_Init ();
 
   startSta();
+
+  xTaskCreate(tcp_server_task, "tcp_server", 4096, (void*)AF_INET, 5, NULL);
 
   sntp_setoperatingmode(SNTP_OPMODE_POLL);
   sntp_setservername(0, "pool.ntp.org");
