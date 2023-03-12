@@ -2,7 +2,7 @@
 # for more information about component CMakeLists.txt files.
 
 idf_component_register(
-    SRCS main.c init_ESP.c ssd1306.c xi2c.c fonts.c mcp3425a1.c enkoder_isr.c pid.c  wifi_sta.c     # list the source files of this component
+    SRCS main.cpp init_ESP.cpp ssd1306.cpp xi2c.cpp fonts.cpp mcp3425a1.cpp enkoder_isr.cpp pid.cpp  wifi_sta.cpp     # list the source files of this component
     INCLUDE_DIRS        # optional, add here public include directories
     PRIV_INCLUDE_DIRS   # optional, add here private include directories
     REQUIRES            # optional, list the public requirements (component names)
