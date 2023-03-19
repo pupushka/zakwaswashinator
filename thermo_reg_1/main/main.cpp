@@ -10,13 +10,29 @@
 #include "enkoder_isr.h"
 #include "pid.h"
 #include "math.h"
+#include "port_desc.h"
 #include <time.h>
+#include <vector>
+#include <string>
+//#include <map>
 
 #include "wifi_sta.h"
 
 #include <sntp.h>
 
 float measTemp (void);
+
+struct ProgramStruct
+{
+	std::string progName;
+	std::vector<OperationParam>program;
+};
+
+OperationParam curuntParam;
+
+std::vector<OperationParam>curentProgram;
+
+std::vector<ProgramStruct>programs;
 
 extern "C"
 
@@ -46,11 +62,21 @@ void app_main (void)
 
   displayInit ();
   initPid ();
-  setZad(41.5);
+  curuntParam.zadanie=41.5;
+  curuntParam.kp=200;
+  curuntParam.kid=0.5;
+  curuntParam.kd=25;
+  curuntParam.limit=getLimit();
+  curuntParam.rele1On=false;
+  curuntParam.rele3On=false;
+  curuntParam.time=0;
+  curuntParam.timeStart=0;
+  curuntParam.timeStop=0;
 
-  setKp(200);
-  setKid(0.5);
-  setKd(25);
+  setZad(curuntParam.zadanie);
+  setKp(curuntParam.kp);
+  setKid(curuntParam.kid);
+  setKd(curuntParam.kd);
 
   SSD1306_Init ();
 
@@ -78,6 +104,11 @@ void app_main (void)
 	  printf( "The current date/time in Bulgaria is: %s \n", strftime_buf);
 	}
 
+      setZad(curuntParam.zadanie);
+      setKp(curuntParam.kp);
+      setKid(curuntParam.kid);
+      setKd(curuntParam.kd);
+      setLimit(curuntParam.limit);
 
       //Measure current temp
       temp=measTemp();
@@ -181,19 +212,24 @@ void app_main (void)
 	      switch (currentMenu)
 	      {
 		case TEMP:
-		  setZad(getZad()+(float)(getEnkoder())/10.0);
+			curuntParam.zadanie=getZad()+(float)(getEnkoder())/10.0;
+		  setZad(curuntParam.zadanie);
 		  break;
 		case PrK:
-		  setKp(getKp()+(float)(getEnkoder())/10.0);
+			curuntParam.kp=getKp()+(float)(getEnkoder())/10.0;
+		  setKp(curuntParam.kp);
 		  break;
 		case IK:
-		  setKid(getKid()+(float)(getEnkoder())/10.0);
+			curuntParam.kid=getKid()+(float)(getEnkoder())/10.0;
+		  setKid(curuntParam.kid);
 		  break;
 		case DK:
-		  setKd(getKd()+(float)(getEnkoder())/10.0);
+			curuntParam.kd=getKd()+(float)(getEnkoder())/10.0;
+		  setKd(curuntParam.kd);
 		  break;
 		case LIMIT:
-		  setLimit(getLimit()+(float)(getEnkoder()));
+			curuntParam.limit=getLimit()+(float)(getEnkoder());
+		  setLimit(curuntParam.limit);
 		  break;
 		default:
 		  break;

@@ -24,8 +24,8 @@
 //#define  CONFIG_ESP_WIFI_AUTH_WPA2_PSK
 #define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WPA2_PSK
 //#define  CONFIG_ESP_WIFI_AUTH_OPEN
-#define EXAMPLE_ESP_WIFI_SSID      "xxxxxxx"
-#define EXAMPLE_ESP_WIFI_PASS      "xxxxxxx"
+#define EXAMPLE_ESP_WIFI_SSID      "xxxxxxxxxxxx"
+#define EXAMPLE_ESP_WIFI_PASS      "xxxxxxxxxxxxx"
 #define EXAMPLE_ESP_MAXIMUM_RETRY  5
 
 #if CONFIG_ESP_WIFI_AUTH_OPEN
@@ -111,9 +111,20 @@ void wifi_init_sta(void)
             .password = EXAMPLE_ESP_WIFI_PASS,
 			.scan_method = WIFI_FAST_SCAN,
 			.bssid_set=false,
+			.bssid = {0,0,0,0,0,0},
+			.channel = 0,
+			.listen_interval = 0,
 			.sort_method=WIFI_CONNECT_AP_BY_SIGNAL,
-			//.rssi=int8_t,
-			//.sae_pwe_h2e=WPA3_SAE_PWE_UNSPECIFIED,
+			.threshold= {.rssi = 0,
+						 .authmode = WIFI_AUTH_WPA2_WPA3_PSK},
+			.pmf_cfg = {.capable = false,
+            			.required = false},
+			.rm_enabled = 0,
+			.btm_enabled = 0,
+			.mbo_enabled = 0,
+			.ft_enabled = 0,
+			.owe_enabled = 0,
+			.reserved = 0,
 
 
             /* Authmode threshold resets to WPA2 as default if password matches WPA2 standards (pasword len => 8).
@@ -121,7 +132,7 @@ void wifi_init_sta(void)
              * to WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK and set the password with length and format matching to
 	     * WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK standards.
              */
-			.threshold= {.authmode = WIFI_AUTH_WPA2_WPA3_PSK},
+
             .sae_pwe_h2e = WPA3_SAE_PWE_BOTH
         },
 

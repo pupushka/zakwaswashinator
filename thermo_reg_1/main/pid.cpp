@@ -60,7 +60,7 @@ void initPid (void)
   printf ("Timer init\n");
 }
 
-static bool pidEvent (gptimer_handle_t timer,
+bool pidEvent (gptimer_handle_t timer,
 		      const gptimer_alarm_event_data_t *edata, void *user_ctx)
 {
 
@@ -122,7 +122,7 @@ void setKp (float a)
 float getKd (void)
 {
   float k = (float) (kD);
-  return kD/100.0;
+  return k/100.0;
 }
 
 void setKd (float a)
@@ -134,7 +134,7 @@ void setKd (float a)
 float getKid (void)
 {
   float k = (float) (kI);
-  return kI/100.0;
+  return k/100.0;
 }
 
 void setKid (float a)
