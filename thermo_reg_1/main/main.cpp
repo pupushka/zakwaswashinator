@@ -14,32 +14,29 @@
 #include <time.h>
 #include <vector>
 #include <string>
+#include "main.h"
 //#include <map>
 
 #include "wifi_sta.h"
+#include "tcp_ip_server.h"
 
 #include <sntp.h>
 
-float measTemp (void);
 
-struct ProgramStruct
-{
-	std::string progName;
-	std::vector<OperationParam>program;
-};
+OperationParam currentParam;
 
-OperationParam curuntParam;
+std::vector<OperationParam> currentProg;
 
-std::vector<OperationParam>curentProgram;
+std::vector<ProgramStruct> programs;
 
-std::vector<ProgramStruct>programs;
+float temp;
 
 extern "C"
 
 void app_main (void)
 {
   int countTime=0;
-  float temp;
+
   char displayBuf[50];
   bool programMode=false;
   bool flagMenu=true;
@@ -62,26 +59,26 @@ void app_main (void)
 
   displayInit ();
   initPid ();
-  curuntParam.zadanie=41.5;
-  curuntParam.kp=200;
-  curuntParam.kid=0.5;
-  curuntParam.kd=25;
-  curuntParam.limit=getLimit();
-  curuntParam.rele1On=false;
-  curuntParam.rele3On=false;
-  curuntParam.time=0;
-  curuntParam.timeStart=0;
-  curuntParam.timeStop=0;
+  currentParam.zadanie=41.5;
+  currentParam.kp=200;
+  currentParam.kid=0.5;
+  currentParam.kd=25;
+  currentParam.limit=getLimit();
+  currentParam.rele1On=false;
+  currentParam.rele3On=false;
+  currentParam.time=0;
+  currentParam.timeStart=0;
+  currentParam.timeStop=0;
 
-  setZad(curuntParam.zadanie);
-  setKp(curuntParam.kp);
-  setKid(curuntParam.kid);
-  setKd(curuntParam.kd);
+  setZad(currentParam.zadanie);
+  setKp(currentParam.kp);
+  setKid(currentParam.kid);
+  setKd(currentParam.kd);
 
   SSD1306_Init ();
 
   startSta();
-
+  xTaskCreate(tcp_server_task, "tcp_server", 4096, (void*)AF_INET, 5, NULL);
   sntp_setoperatingmode(SNTP_OPMODE_POLL);
   sntp_setservername(0, "pool.ntp.org");
   sntp_init();
@@ -104,11 +101,11 @@ void app_main (void)
 	  printf( "The current date/time in Bulgaria is: %s \n", strftime_buf);
 	}
 
-      setZad(curuntParam.zadanie);
-      setKp(curuntParam.kp);
-      setKid(curuntParam.kid);
-      setKd(curuntParam.kd);
-      setLimit(curuntParam.limit);
+      setZad(currentParam.zadanie);
+      setKp(currentParam.kp);
+      setKid(currentParam.kid);
+      setKd(currentParam.kd);
+      setLimit(currentParam.limit);
 
       //Measure current temp
       temp=measTemp();
@@ -212,24 +209,24 @@ void app_main (void)
 	      switch (currentMenu)
 	      {
 		case TEMP:
-			curuntParam.zadanie=getZad()+(float)(getEnkoder())/10.0;
-		  setZad(curuntParam.zadanie);
+			currentParam.zadanie=getZad()+(float)(getEnkoder())/10.0;
+		  setZad(currentParam.zadanie);
 		  break;
 		case PrK:
-			curuntParam.kp=getKp()+(float)(getEnkoder())/10.0;
-		  setKp(curuntParam.kp);
+			currentParam.kp=getKp()+(float)(getEnkoder())/10.0;
+		  setKp(currentParam.kp);
 		  break;
 		case IK:
-			curuntParam.kid=getKid()+(float)(getEnkoder())/10.0;
-		  setKid(curuntParam.kid);
+			currentParam.kid=getKid()+(float)(getEnkoder())/10.0;
+		  setKid(currentParam.kid);
 		  break;
 		case DK:
-			curuntParam.kd=getKd()+(float)(getEnkoder())/10.0;
-		  setKd(curuntParam.kd);
+			currentParam.kd=getKd()+(float)(getEnkoder())/10.0;
+		  setKd(currentParam.kd);
 		  break;
 		case LIMIT:
-			curuntParam.limit=getLimit()+(float)(getEnkoder());
-		  setLimit(curuntParam.limit);
+			currentParam.limit=getLimit()+(float)(getEnkoder());
+		  setLimit(currentParam.limit);
 		  break;
 		default:
 		  break;
@@ -253,4 +250,21 @@ float measTemp (void)
   res = 1000000 * volt / 253.4;
   temp = (1 / ((log (res / 10000) / 3988) + 1 / 298.15)) - 273.15;
   return temp;
+}
+
+
+float getMeasTemp (void)
+{
+  return temp;
+}
+
+
+OperationParam getCurrentParam (void)
+{
+  return currentParam;
+}
+
+void setCurrentParam (OperationParam a)
+{
+  currentParam =a;
 }
