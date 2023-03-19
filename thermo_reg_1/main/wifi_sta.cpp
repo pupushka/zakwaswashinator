@@ -17,6 +17,8 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
+#include <string.h>
+
 /* The examples use WiFi configuration that you can set via project configuration menu
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
@@ -24,8 +26,8 @@
 //#define  CONFIG_ESP_WIFI_AUTH_WPA2_PSK
 #define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WPA2_PSK
 //#define  CONFIG_ESP_WIFI_AUTH_OPEN
-#define EXAMPLE_ESP_WIFI_SSID      "xxxxxxxxxxxx"
-#define EXAMPLE_ESP_WIFI_PASS      "xxxxxxxxxxxxx"
+#define EXAMPLE_ESP_WIFI_SSID      "xxxxx"
+#define EXAMPLE_ESP_WIFI_PASS      "xxxxxx"
 #define EXAMPLE_ESP_MAXIMUM_RETRY  5
 
 #if CONFIG_ESP_WIFI_AUTH_OPEN
@@ -105,38 +107,44 @@ void wifi_init_sta(void)
                                                         NULL,
                                                         &instance_got_ip));
 
-    wifi_config_t wifi_config = {
-        .sta = {
-            .ssid = EXAMPLE_ESP_WIFI_SSID,
-            .password = EXAMPLE_ESP_WIFI_PASS,
-			.scan_method = WIFI_FAST_SCAN,
-			.bssid_set=false,
-			.bssid = {0,0,0,0,0,0},
-			.channel = 0,
-			.listen_interval = 0,
-			.sort_method=WIFI_CONNECT_AP_BY_SIGNAL,
-			.threshold= {.rssi = 0,
-						 .authmode = WIFI_AUTH_WPA2_WPA3_PSK},
-			.pmf_cfg = {.capable = false,
-            			.required = false},
-			.rm_enabled = 0,
-			.btm_enabled = 0,
-			.mbo_enabled = 0,
-			.ft_enabled = 0,
-			.owe_enabled = 0,
-			.reserved = 0,
+//    wifi_config_t wifi_config = {
+//        .sta = {
+//            .ssid = EXAMPLE_ESP_WIFI_SSID,
+//            .password = EXAMPLE_ESP_WIFI_PASS,
+//			.scan_method = WIFI_FAST_SCAN,
+//			.bssid_set=false,
+//			.bssid = {0,0,0,0,0,0},
+//			.channel = 0,
+//			.listen_interval = 0,
+//			.sort_method=WIFI_CONNECT_AP_BY_SIGNAL,
+//			.threshold= {.rssi = 0,
+//						 .authmode = WIFI_AUTH_WPA2_WPA3_PSK},
+//			.pmf_cfg = {.capable = false,
+//            			.required = false},
+//			.rm_enabled = 0,
+//			.btm_enabled = 0,
+//			.mbo_enabled = 0,
+//			.ft_enabled = 0,
+//			.owe_enabled = 0,
+//			.reserved = 0,
+//
+//
+//            /* Authmode threshold resets to WPA2 as default if password matches WPA2 standards (pasword len => 8).
+//             * If you want to connect the device to deprecated WEP/WPA networks, Please set the threshold value
+//             * to WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK and set the password with length and format matching to
+//	     * WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK standards.
+//             */
+//
+//            .sae_pwe_h2e = WPA3_SAE_PWE_BOTH
+//        },
+//
+//    };
 
+    wifi_config_t wifi_config;
+    memset(&wifi_config, 0, sizeof(wifi_config));
+    sprintf (reinterpret_cast<char*>(wifi_config.sta.ssid), EXAMPLE_ESP_WIFI_SSID );
+    sprintf (reinterpret_cast<char*>(wifi_config.sta.password), EXAMPLE_ESP_WIFI_PASS);
 
-            /* Authmode threshold resets to WPA2 as default if password matches WPA2 standards (pasword len => 8).
-             * If you want to connect the device to deprecated WEP/WPA networks, Please set the threshold value
-             * to WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK and set the password with length and format matching to
-	     * WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK standards.
-             */
-
-            .sae_pwe_h2e = WPA3_SAE_PWE_BOTH
-        },
-
-    };
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
     ESP_ERROR_CHECK(esp_wifi_start() );
