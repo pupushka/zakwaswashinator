@@ -20,6 +20,7 @@
 #define IN_MASK 	((1ULL<<CCW) | (1ULL<<NO_ENK) | (1ULL<<CW))
 #define OUT_MASK 	((1ULL<<SWITCH_2) | (1ULL<<SWITCH_3) | (1ULL<<SWITCH_1) | (1ULL<<LIGHT_PWM))
 
+
 struct OperationParam
 {
 	float zadanie;
@@ -33,5 +34,6 @@ struct OperationParam
 	bool rele1On;
 	bool rele3On;
 };
+
 
 #endif /* MAIN_PORT_DESC_H_ */
