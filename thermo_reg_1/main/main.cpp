@@ -130,19 +130,24 @@ void app_main (void)
 	  switch (currentMenu)
 	  {
 		case TEMP:
-		  sprintf (displayBuf, "T=%.2f    ", getZad());
+		  //sprintf (displayBuf, "T=%.2f    ", getZad());
+			sprintf (displayBuf, "T=%.2f    ", currentParam.zadanie);
 		  break;
 		case PrK:
-		  sprintf (displayBuf, "Kp=%.2f    ", getKp());
+		  //sprintf (displayBuf, "Kp=%.2f    ", getKp());
+			sprintf (displayBuf, "Kp=%.2f    ", currentParam.kp);
 		  break;
 		case IK:
-		  sprintf (displayBuf, "Ki=%.2f    ", getKid());
+		  //sprintf (displayBuf, "Ki=%.2f    ", getKid());
+			sprintf (displayBuf, "Ki=%.2f    ", currentParam.kid);
 		  break;
 		case DK:
-		  sprintf (displayBuf, "Kd=%.2f    ", getKd());
+		  //sprintf (displayBuf, "Kd=%.2f    ", getKd());
+			sprintf (displayBuf, "Kd=%.2f    ", currentParam.kd);
 		  break;
 		case LIMIT:
-		  sprintf (displayBuf, "Lim=%f    ", getLimit());
+		  //sprintf (displayBuf, "Lim=%f    ", getLimit());
+			sprintf (displayBuf, "Lim=%f    ", currentParam.limit);
 		 break;
 		default:
 		  break;
@@ -209,23 +214,28 @@ void app_main (void)
 	      switch (currentMenu)
 	      {
 		case TEMP:
-			currentParam.zadanie=getZad()+(float)(getEnkoder())/10.0;
+			//currentParam.zadanie=getZad()+(float)(getEnkoder())/10.0;
+			currentParam.zadanie=currentParam.zadanie+(float)(getEnkoder())/10.0;
 		  setZad(currentParam.zadanie);
 		  break;
 		case PrK:
-			currentParam.kp=getKp()+(float)(getEnkoder())/10.0;
+			//currentParam.kp=getKp()+(float)(getEnkoder())/10.0;
+			currentParam.kp=currentParam.kp+(float)(getEnkoder())/10.0;
 		  setKp(currentParam.kp);
 		  break;
 		case IK:
-			currentParam.kid=getKid()+(float)(getEnkoder())/10.0;
+			//currentParam.kid=getKid()+(float)(getEnkoder())/10.0;
+			currentParam.kid=currentParam.kid+(float)(getEnkoder())/10.0;
 		  setKid(currentParam.kid);
 		  break;
 		case DK:
-			currentParam.kd=getKd()+(float)(getEnkoder())/10.0;
+			//currentParam.kd=getKd()+(float)(getEnkoder())/10.0;
+			currentParam.kd=currentParam.kd+(float)(getEnkoder())/10.0;
 		  setKd(currentParam.kd);
 		  break;
 		case LIMIT:
-			currentParam.limit=getLimit()+(float)(getEnkoder());
+			//currentParam.limit=getLimit()+(float)(getEnkoder());
+			currentParam.limit=currentParam.limit+(float)(getEnkoder());
 		  setLimit(currentParam.limit);
 		  break;
 		default:
