@@ -22,6 +22,8 @@ struct cmd_struct
 { GETMEASTEMP, "mTemp?" },
 { GETZADANIE, "zadanie?" },
 { SETZADANIE, "setZadanie" },
+{ SETZADANIE, "setZadanie" },
+{ GETPROGRAMS, "programs?" },
 { -1, NULL } };
 
 /**

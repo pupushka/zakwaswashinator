@@ -75,6 +75,8 @@ void app_main (void)
   setKid(currentParam.kid);
   setKd(currentParam.kd);
 
+  debugProg();
+
   SSD1306_Init ();
 
   startSta();
@@ -277,4 +279,101 @@ OperationParam getCurrentParam (void)
 void setCurrentParam (OperationParam a)
 {
   currentParam =a;
+}
+
+void addProg(ProgramStruct tobeadd)
+{
+	programs.push_back(tobeadd);
+}
+
+
+void delProg(std::string programme_name_toberm)
+{
+	for(int i=0; i<programs.size(); i++)
+	{
+		if(programs[i].progName.compare(programme_name_toberm))
+		{
+			programs.erase(programs.begin()+i);
+		}
+	}
+
+}
+
+
+std::vector<ProgramStruct> getProgram (void)
+{
+  return programs;
+}
+
+
+void debugProg(void)
+{
+	OperationParam debugcurrentparams;
+	debugcurrentparams.zadanie=45;
+	debugcurrentparams.kp=200;
+	debugcurrentparams.kid=0.5;
+	debugcurrentparams.kd=25;
+	debugcurrentparams.limit=getLimit();
+	debugcurrentparams.rele1On=true;
+	debugcurrentparams.rele3On=false;
+	debugcurrentparams.time=3600;
+	debugcurrentparams.timeStart=0;
+	debugcurrentparams.timeStop=0;
+
+	currentProg.push_back(debugcurrentparams);
+
+	debugcurrentparams.zadanie=32;
+	debugcurrentparams.kp=200;
+	debugcurrentparams.kid=0.5;
+	debugcurrentparams.kd=25;
+	debugcurrentparams.limit=getLimit();
+	debugcurrentparams.rele1On=false;
+	debugcurrentparams.rele3On=false;
+	debugcurrentparams.time=5*3600;
+	debugcurrentparams.timeStart=0;
+	debugcurrentparams.timeStop=0;
+
+	currentProg.push_back(debugcurrentparams);
+
+	ProgramStruct debugprogrammestruct;
+	debugprogrammestruct.progName="prog1";
+	debugprogrammestruct.program=currentProg;
+
+	programs.push_back(debugprogrammestruct);
+
+
+	//2ns prog
+	currentProg.clear();
+	debugcurrentparams.zadanie=78;
+	debugcurrentparams.kp=200;
+	debugcurrentparams.kid=0.5;
+	debugcurrentparams.kd=25;
+	debugcurrentparams.limit=getLimit();
+	debugcurrentparams.rele1On=false;
+	debugcurrentparams.rele3On=false;
+	debugcurrentparams.time=2*3600;
+	debugcurrentparams.timeStart=0;
+	debugcurrentparams.timeStop=0;
+
+	currentProg.push_back(debugcurrentparams);
+
+	debugcurrentparams.zadanie=60;
+	debugcurrentparams.kp=200;
+	debugcurrentparams.kid=0.5;
+	debugcurrentparams.kd=25;
+	debugcurrentparams.limit=getLimit();
+	debugcurrentparams.rele1On=false;
+	debugcurrentparams.rele3On=false;
+	debugcurrentparams.time=9*3600;
+	debugcurrentparams.timeStart=0;
+	debugcurrentparams.timeStop=0;
+
+	currentProg.push_back(debugcurrentparams);
+
+
+	debugprogrammestruct.progName="prog2";
+	debugprogrammestruct.program=currentProg;
+
+	programs.push_back(debugprogrammestruct);
+
 }

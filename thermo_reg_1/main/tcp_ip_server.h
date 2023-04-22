@@ -29,7 +29,7 @@
 #include "pid.h"
 #include "interpreter.h"
 
-#define PORT                        3333
+#define PORT                        24650
 #define KEEPALIVE_IDLE              20
 #define KEEPALIVE_INTERVAL          1
 #define KEEPALIVE_COUNT             15

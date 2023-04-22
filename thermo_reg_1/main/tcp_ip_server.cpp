@@ -31,6 +31,8 @@ void comunication_commands(const int sock)
 	char meas_temp[128];
 	char set_zadanie_value[128];
 	char get_zadanie_value[128];
+	char get_zadanie_struct[128];
+	std::vector<ProgramStruct> tmpProg;
 	int len;
 	do
 	{
@@ -40,6 +42,7 @@ void comunication_commands(const int sock)
 	    cmd = get_cmd_id( command_mssg );
 	    OperationParam tmpParam;
 	    tmpParam=getCurrentParam();
+
 	    switch ( cmd )
 	    {
     		case GETMEASTEMP:
@@ -69,14 +72,34 @@ void comunication_commands(const int sock)
 	    		send(sock, get_kp_value, strlen(get_kp_value) , 0);
 	    		ESP_LOGI(TAG, "read kp: %s\n", get_kp_value);
 	    		break;
-	    	case SETKP:
-	    		ESP_LOGI(TAG, "write msg: %s\n", command_mssg);
-	    		strncpy(set_kp_value, (char*)memmove(command_mssg, command_mssg+6, strlen(command_mssg)), strlen(command_mssg));
-	    		tmpParam.kp=atof(set_kp_value);
-	    		printf("set kp  %f\n", tmpParam.kp);
-	    		setCurrentParam(tmpParam);
-	    		//setKp(atof(set_kp_value)); // da prpwerq dali naistina e float dali ima tochka i chisla
-	    		printf("setted kp  %s\n", set_kp_value);
+	    	case GETPROGRAMS:
+	    		tmpProg=getProgram();
+	    		//send element by element
+	    		/*for(int i=0; i<tmpProg.size(); i++)
+	    		{
+	    			ESP_LOGI(TAG, "prog_name%d = %s \n", i, tmpProg[i].progName.c_str());
+	    			for(int j=0; j<tmpProg[i].program.size(); j++)
+	    			{
+	    				ESP_LOGI(TAG, "prog_%d zadanie = %f \n", i, tmpProg[i].program[j].zadanie);
+	    				ESP_LOGI(TAG, "prog_%d time = %f \n", i, tmpProg[i].program[j].time);
+	    			}
+	    		}
+	    		*/
+	    		for(int i=0; i<tmpProg.size(); i++)
+	    		{
+	    			// First send the number of elements
+	    			//uint32_t number_elements = tmpProg[i].size();
+	    			//send(sock, &number_elements, sizeof number_elements, 0);
+
+	    			for(int j=0; j<tmpProg[i].program.size(); j++)
+	    			{
+	    				//sprintf(get_zadanie_struct, "%f\n", tmpProg[i].program[j].zadanie);
+	    				send(sock, &tmpProg[i].program[j], sizeof(OperationParam), 0);
+
+	    			}
+
+	    			//send(sock, tmpProg[i], tmpProg[i].size() , 0);
+	    		}
 	    		break;
 	    	default:
 	    		break;
