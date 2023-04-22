@@ -23,7 +23,10 @@ struct cmd_struct
 { GETZADANIE, "zadanie?" },
 { SETZADANIE, "setZadanie" },
 { SETZADANIE, "setZadanie" },
-{ GETPROGRAMS, "programs?" },
+{ NUMBPROG, "countProgs?" },
+{ PROGNAMES, "nameProgs=" },
+{ PROGSTEPSNUMB, "nameStepProgs=" },
+{ GETPROGRAMS, "programs=" },
 { -1, NULL } };
 
 /**

@@ -15,6 +15,9 @@
 #include "tcp_ip_server.h"
 #include "port_desc.h"
 #include "main.h"
+#include "utils.h"
+
+
 static const char *TAG = "tcpipexample";
 
 
@@ -26,14 +29,19 @@ void comunication_commands(const int sock)
 	char send_mssg[128];
 	char command_mssg[128];
 
+	char number_progs[10];
+	char nameProg[128];
+	char numStepsProg[128];
 	char set_kp_value[128];
 	char get_kp_value[128];
 	char meas_temp[128];
 	char set_zadanie_value[128];
 	char get_zadanie_value[128];
 	char get_zadanie_struct[128];
+	char * pch;
 	std::vector<ProgramStruct> tmpProg;
 	int len;
+	uint64_t ch;
 	do
 	{
 	    len=recv(sock,command_mssg, sizeof(command_mssg)-1, 0);
@@ -72,33 +80,59 @@ void comunication_commands(const int sock)
 	    		send(sock, get_kp_value, strlen(get_kp_value) , 0);
 	    		ESP_LOGI(TAG, "read kp: %s\n", get_kp_value);
 	    		break;
-	    	case GETPROGRAMS:
+	    	case NUMBPROG:
 	    		tmpProg=getProgram();
-	    		//send element by element
-	    		/*for(int i=0; i<tmpProg.size(); i++)
+	    		sprintf(number_progs,"%d\n",tmpProg.size());
+	    		send(sock, number_progs, strlen(number_progs), 0);
+	    		ESP_LOGI(TAG, "numb prog: %d\n", tmpProg.size());
+	    		break;
+	    	case PROGNAMES:
+	    		pch=strstr(command_mssg, "=");
+	    		if(pch!=NULL)
 	    		{
-	    			ESP_LOGI(TAG, "prog_name%d = %s \n", i, tmpProg[i].progName.c_str());
-	    			for(int j=0; j<tmpProg[i].program.size(); j++)
-	    			{
-	    				ESP_LOGI(TAG, "prog_%d zadanie = %f \n", i, tmpProg[i].program[j].zadanie);
-	    				ESP_LOGI(TAG, "prog_%d time = %f \n", i, tmpProg[i].program[j].time);
-	    			}
+	    			pch=strstr(pch, "=");
+	    			ch=ConvertASCItouint64(pch+1);
+	    			tmpProg=getProgram();
+	    			printf("ch= %lld\n", ch);
+
+	    			//for(int i=0; i<tmpProg.size(); i++)
+	    			//{
+	    				   sprintf(nameProg, "%s\n", tmpProg[ch].progName.c_str());
+	    					//sprintf(nameProg, "abcdefg\n");
+	    				   //printf("progName=%s\n", nameProg);
+	    				   //ESP_LOGI(TAG, "Prog Name: %s \n", tmpProg[i].progName.c_str());
+	    				   send(sock, nameProg, strlen(nameProg), 0);
+	    			//}
 	    		}
-	    		*/
-	    		for(int i=0; i<tmpProg.size(); i++)
+
+	    		break;
+	    	case PROGSTEPSNUMB:
+	    		pch=strstr(command_mssg, "=");
+	    		if(pch!=NULL)
 	    		{
-	    			// First send the number of elements
-	    			//uint32_t number_elements = tmpProg[i].size();
-	    			//send(sock, &number_elements, sizeof number_elements, 0);
+	    			pch=strstr(pch, "=");
+	    			ch=ConvertASCItouint64(pch+1);
+	    			tmpProg=getProgram();
+	    		//for(int i=0; i<tmpProg.size(); i++)
+	    		//{
+	    		    sprintf(numStepsProg, "%d\n", tmpProg[ch].program.size());
+	    			send(sock, numStepsProg, strlen(numStepsProg), 0);
+	    		//}
+	    		}
 
-	    			for(int j=0; j<tmpProg[i].program.size(); j++)
+	    		break;
+	    	case GETPROGRAMS:
+	    		pch=strstr(command_mssg, "=");
+	    		if(pch!=NULL)
+	    		{
+	    			pch=strstr(pch, "=");
+	    			ch=ConvertASCItouint64(pch+1);
+	    			tmpProg=getProgram();
+	    			for(int j=0; j<tmpProg[ch].program.size(); j++)
 	    			{
-	    				//sprintf(get_zadanie_struct, "%f\n", tmpProg[i].program[j].zadanie);
-	    				send(sock, &tmpProg[i].program[j], sizeof(OperationParam), 0);
-
+	    				send(sock, &tmpProg[ch].program[j], sizeof(OperationParam)*tmpProg[ch].program.size(), 0);
+	    				printf("size=%d\n", sizeof(OperationParam)*tmpProg[ch].program.size());
 	    			}
-
-	    			//send(sock, tmpProg[i], tmpProg[i].size() , 0);
 	    		}
 	    		break;
 	    	default:
