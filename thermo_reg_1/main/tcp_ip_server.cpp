@@ -43,11 +43,21 @@ void comunication_commands(const int sock)
 	int len;
 	int len_prog_name;
 	int len_recv_struct;
+	int len_numb_steps_in_prog;
 	uint64_t ch;
 	int numb_progs_struct=0;
 	char numb_progs_struct_str[128];
+
+	int numb_steps_in_prog_struct=0;
+	char numb_steps_in_prog_struct_str[128];
+
+
 	char prog_name[128];
 	char recv_struct[128];
+	float tmp_struct_transf;
+	float tmp_struct_transf2;
+	float tmp_struct_transf3;
+	float tmp_struct_transf4;
 	do
 	{
 	    len=recv(sock,command_mssg, sizeof(command_mssg)-1, 0);
@@ -153,13 +163,43 @@ void comunication_commands(const int sock)
 	    			len_prog_name=recv(sock,prog_name, sizeof(prog_name)-1, 0);  //poluchavam imeto na programata
 	    			prog_name[len_prog_name]=0;
 	    			ESP_LOGI(TAG, "prog name: %s", prog_name);
+//	    			for(int jj=0 ; jj<len_prog_name; jj++)
+//	    			{
+//	    				ESP_LOGI(TAG, "recv_prog name: byte %d dec %d hex %x chr %c \n", jj,prog_name[jj],prog_name[jj],prog_name[jj]);
+//	    			}
+
+	    			len_numb_steps_in_prog=recv(sock, numb_steps_in_prog_struct_str, sizeof(numb_steps_in_prog_struct_str)-1, 0);  //poluchawam stypkite w programata
+	    			//numb_steps_in_prog_struct_str[len_numb_steps_in_prog]=0;
+	    			numb_progs_struct=atoi(numb_steps_in_prog_struct_str);
+	    			ESP_LOGI(TAG, "steps in prog: %d", numb_steps_in_prog_struct);
 
 
-	    			len_recv_struct=recv(sock,recv_struct, sizeof(recv_struct)-1, 0);  //poluchavam imeto na programata
-	    			prog_name[len_recv_struct]=0;
-	    			ESP_LOGI(TAG, "recv_strcut: %s", recv_struct);
+	    			for(int j=0; j<numb_progs_struct; j++)  //for every step of the program
+	    			{
 
+	    				len_recv_struct=recv(sock,recv_struct, sizeof(recv_struct)-1, 0);  //poluchavam structura
+	    				recv_struct[len_recv_struct]=0;
+//	    				for(int jj=0 ; jj<len_recv_struct; jj++)
+//	    				{
+//	    					ESP_LOGI(TAG, "recv_strcut: byte %d dec %d hex %x chr %c \n", jj,recv_struct[jj],recv_struct[jj],recv_struct[jj]);
+//	    				}
+//	    				ESP_LOGI(TAG, "recv_strcut: %s\n", recv_struct);
+//	    				ESP_LOGI(TAG, "recv_strcut 3: %x\n", recv_struct[3]);
+//	    				ESP_LOGI(TAG, "recv_strcut 2: %x\n", recv_struct[2]);
+//	    				ESP_LOGI(TAG, "recv_strcut 1: %x\n", recv_struct[1]);
+//	    				ESP_LOGI(TAG, "recv_strcut 0: %x\n", recv_struct[0]);
+	    				tmp_struct_transf=convertExpMantissToFloat(recv_struct[0], recv_struct[1], recv_struct[2], recv_struct[3]);  //probrazuwam byte array kym chisla
+	    				ESP_LOGI(TAG, "recv_strcut converted: %f\n", tmp_struct_transf);
 
+	    				tmp_struct_transf2=convertExpMantissToFloat(recv_struct[4], recv_struct[5], recv_struct[6], recv_struct[7]);  //probrazuwam byte array kym chisla
+	    				ESP_LOGI(TAG, "recv_strcut converted 2 : %f\n", tmp_struct_transf2);
+
+	    				tmp_struct_transf3=convertExpMantissToFloat(recv_struct[8], recv_struct[9], recv_struct[10], recv_struct[11]);  //probrazuwam byte array kym chisla
+	    				ESP_LOGI(TAG, "recv_strcut converted 3: %f\n", tmp_struct_transf3);
+
+	    				tmp_struct_transf4=convertExpMantissToFloat(recv_struct[12], recv_struct[13], recv_struct[14], recv_struct[15]);  //probrazuwam byte array kym chisla
+	    				ESP_LOGI(TAG, "recv_strcut converted 4: %f\n", tmp_struct_transf4);
+	    			}
 	    		}
 //	    		setCurrentParam(tmpParam);
 //	    		//setKp(atof(set_kp_value)); // da prpwerq dali naistina e float dali ima tochka i chisla
