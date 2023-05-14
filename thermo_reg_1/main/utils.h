@@ -12,6 +12,10 @@
 #include <stdint.h>
 
 uint64_t ConvertASCItouint64( char *in );
+void convertFloatToExpMantiss(float in, uint8_t& exponent, uint8_t& mantiss1,
+                              uint8_t& mantiss2, uint8_t& mantiss3);
+float convertExpMantissToFloat(uint8_t exponent, uint8_t mantiss1,
+                               uint8_t mantiss2, uint8_t mantiss3);
 
 
 #endif /* MAIN_UTILS_H_ */

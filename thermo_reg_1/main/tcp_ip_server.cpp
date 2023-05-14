@@ -41,7 +41,13 @@ void comunication_commands(const int sock)
 	char * pch;
 	std::vector<ProgramStruct> tmpProg;
 	int len;
+	int len_prog_name;
+	int len_recv_struct;
 	uint64_t ch;
+	int numb_progs_struct=0;
+	char numb_progs_struct_str[128];
+	char prog_name[128];
+	char recv_struct[128];
 	do
 	{
 	    len=recv(sock,command_mssg, sizeof(command_mssg)-1, 0);
@@ -134,6 +140,30 @@ void comunication_commands(const int sock)
 	    				printf("size=%d\n", sizeof(OperationParam)*tmpProg[ch].program.size());
 	    			}
 	    		}
+	    		break;
+	    	case TRANSFERSTRUCT:
+	    		ESP_LOGI(TAG, "write msg: %s\n", command_mssg);
+	    		//numb_progs_struct
+	    		strncpy(numb_progs_struct_str, (char*)memmove(command_mssg, command_mssg+15, strlen(command_mssg)), strlen(command_mssg));
+	    		//printf("numb_progs_struct_stre  %s\n", numb_progs_struct_str);
+	    		numb_progs_struct=atoi(numb_progs_struct_str);
+	    		printf("numb_progs_struct  %d\n", numb_progs_struct);
+	    		for(int i=0; i<numb_progs_struct; i++)
+	    		{
+	    			len_prog_name=recv(sock,prog_name, sizeof(prog_name)-1, 0);  //poluchavam imeto na programata
+	    			prog_name[len_prog_name]=0;
+	    			ESP_LOGI(TAG, "prog name: %s", prog_name);
+
+
+	    			len_recv_struct=recv(sock,recv_struct, sizeof(recv_struct)-1, 0);  //poluchavam imeto na programata
+	    			prog_name[len_recv_struct]=0;
+	    			ESP_LOGI(TAG, "recv_strcut: %s", recv_struct);
+
+
+	    		}
+//	    		setCurrentParam(tmpParam);
+//	    		//setKp(atof(set_kp_value)); // da prpwerq dali naistina e float dali ima tochka i chisla
+//	    		printf("setted zadanie  %s\n", set_zadanie_value);
 	    		break;
 	    	default:
 	    		break;

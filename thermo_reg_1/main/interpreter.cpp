@@ -22,7 +22,7 @@ struct cmd_struct
 { GETMEASTEMP, "mTemp?" },
 { GETZADANIE, "zadanie?" },
 { SETZADANIE, "setZadanie" },
-{ SETZADANIE, "setZadanie" },
+{ TRANSFERSTRUCT, "transferStruct=" },
 { NUMBPROG, "countProgs?" },
 { PROGNAMES, "nameProgs=" },
 { PROGSTEPSNUMB, "nameStepProgs=" },
