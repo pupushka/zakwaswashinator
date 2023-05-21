@@ -21,6 +21,7 @@ void setCurrentParam (OperationParam a);
 float getMeasTemp (void);
 float measTemp (void);
 void delProg(std::string programme_name_toberm);
+void delAllProgs(void);
 void addProg(ProgramStruct tobeadd);
 std::vector<ProgramStruct> getProgram (void);
 void debugProg(void);

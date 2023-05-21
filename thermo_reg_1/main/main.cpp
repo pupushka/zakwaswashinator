@@ -377,3 +377,10 @@ void debugProg(void)
 	programs.push_back(debugprogrammestruct);
 
 }
+
+
+void delAllProgs(void)
+{
+	programs.clear();
+}
+

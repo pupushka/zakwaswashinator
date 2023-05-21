@@ -26,6 +26,7 @@ struct cmd_struct
 { NUMBPROG, "countProgs?" },
 { PROGNAMES, "nameProgs=" },
 { PROGSTEPSNUMB, "nameStepProgs=" },
+{ PRINTVECT, "vect?" },
 { GETPROGRAMS, "programs=" },
 { -1, NULL } };
 

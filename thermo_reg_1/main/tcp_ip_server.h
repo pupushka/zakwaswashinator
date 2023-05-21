@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include "pid.h"
 #include "interpreter.h"
+#include <string>
 
 #define PORT                        24650
 #define KEEPALIVE_IDLE              20
@@ -38,6 +39,7 @@
 
 void tcp_server_task(void *pvParameters);
 void comunication_commands(const int sock);
+int len(std::string str);
 
 
 #endif /* MAIN_TCP_SERVER_H_ */

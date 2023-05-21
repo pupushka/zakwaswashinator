@@ -16,6 +16,7 @@
 #include "port_desc.h"
 #include "main.h"
 #include "utils.h"
+#include "rom/ets_sys.h"
 
 
 static const char *TAG = "tcpipexample";
@@ -51,9 +52,14 @@ void comunication_commands(const int sock)
 	int numb_steps_in_prog_struct=0;
 	char numb_steps_in_prog_struct_str[128];
 
+	char *ptr;
 
 	char prog_name[128];
+	char prog_name_steps[128];
+	char prog_name_steps_split[4];
 	char recv_struct[128];
+	ProgramStruct tmpProgReadStruct;
+	OperationParam tmpParamReadStruct;
 	float tmp_struct_transf;
 	float tmp_struct_transf2;
 	float tmp_struct_transf3;
@@ -66,6 +72,7 @@ void comunication_commands(const int sock)
 	    cmd = get_cmd_id( command_mssg );
 	    OperationParam tmpParam;
 	    tmpParam=getCurrentParam();
+
 
 	    switch ( cmd )
 	    {
@@ -151,8 +158,30 @@ void comunication_commands(const int sock)
 	    			}
 	    		}
 	    		break;
+
+	    	case PRINTVECT:
+	    		tmpProg=getProgram();
+	    		for(int i=0; i<tmpProg.size(); i++)
+	    		{
+	    			printf("progname %d=%s\n", i, tmpProg[i].progName.c_str() );
+	    			for(int j=0; j<tmpProg[i].program.size(); j++)
+	    			{
+	    				printf("zadanie i=%d=%f\n", i, tmpProg[i].program[j].zadanie);
+	    				printf("kp i=%d=%f\n", i, tmpProg[i].program[j].kp);
+	    				printf("kid i=%d=%f\n", i, tmpProg[i].program[j].kid);
+	    				printf("limit i=%d=%f\n", i, tmpProg[i].program[j].limit);
+	    				printf("kd i=%d=%f\n", i, tmpProg[i].program[j].kd);
+	    				printf("timeStart i=%d=%f\n", i, tmpProg[i].program[j].timeStart);
+	    				printf("timeStop i=%d=%f\n", i, tmpProg[i].program[j].timeStop);
+	    				printf("time i=%d=%f\n", i, tmpProg[i].program[j].time);
+
+	    			}
+	    		}
+
+	    		break;
 	    	case TRANSFERSTRUCT:
-	    		ESP_LOGI(TAG, "write msg: %s\n", command_mssg);
+	    		delAllProgs();
+	    		//ESP_LOGI(TAG, "write msg: %s\n", command_mssg);
 	    		//numb_progs_struct
 	    		strncpy(numb_progs_struct_str, (char*)memmove(command_mssg, command_mssg+15, strlen(command_mssg)), strlen(command_mssg));
 	    		//printf("numb_progs_struct_stre  %s\n", numb_progs_struct_str);
@@ -160,46 +189,61 @@ void comunication_commands(const int sock)
 	    		printf("numb_progs_struct  %d\n", numb_progs_struct);
 	    		for(int i=0; i<numb_progs_struct; i++)
 	    		{
-	    			len_prog_name=recv(sock,prog_name, sizeof(prog_name)-1, 0);  //poluchavam imeto na programata
-	    			prog_name[len_prog_name]=0;
-	    			ESP_LOGI(TAG, "prog name: %s", prog_name);
-//	    			for(int jj=0 ; jj<len_prog_name; jj++)
-//	    			{
-//	    				ESP_LOGI(TAG, "recv_prog name: byte %d dec %d hex %x chr %c \n", jj,prog_name[jj],prog_name[jj],prog_name[jj]);
-//	    			}
-
-	    			len_numb_steps_in_prog=recv(sock, numb_steps_in_prog_struct_str, sizeof(numb_steps_in_prog_struct_str)-1, 0);  //poluchawam stypkite w programata
-	    			//numb_steps_in_prog_struct_str[len_numb_steps_in_prog]=0;
-	    			numb_progs_struct=atoi(numb_steps_in_prog_struct_str);
-	    			ESP_LOGI(TAG, "steps in prog: %d", numb_steps_in_prog_struct);
+//	    			len_prog_name=recv(sock,prog_name, sizeof(prog_name)-1, 0);  //poluchavam imeto na programata
+//	    			prog_name[len_prog_name]=0;
+//	    			ESP_LOGI(TAG, "prog name: %s", prog_name);
+//	    			tmpProgReadStruct.progName=prog_name;
+//
+//	    			//ets_delay_us(3000);
+//	    			len_numb_steps_in_prog=recv(sock, numb_steps_in_prog_struct_str, sizeof(numb_steps_in_prog_struct_str)-1, 0);  //poluchawam stypkite w programata
+//	    			//numb_steps_in_prog_struct_str[len_numb_steps_in_prog]=0;
+//	    			numb_steps_in_prog_struct=atoi(numb_steps_in_prog_struct_str);
+//	    			ESP_LOGI(TAG, "steps in prog: %d", numb_steps_in_prog_struct);
 
 
-	    			for(int j=0; j<numb_progs_struct; j++)  //for every step of the program
+	    			len_prog_name=recv(sock,prog_name_steps, sizeof(prog_name_steps)-1, 0);  //poluchavam imeto na programata i stypkite w programata
+	    			ptr=strtok(prog_name_steps, " ");
+	    			strcpy(prog_name, ptr);
+	    			ESP_LOGI(TAG, "prog_name: %s", prog_name);
+	    			tmpProgReadStruct.progName=ptr;
+	    			numb_steps_in_prog_struct=atoi(strtok(NULL, " "));
+	    			ESP_LOGI(TAG, "steps: %d", numb_steps_in_prog_struct);
+//
+
+
+	    			for(int j=0; j<numb_steps_in_prog_struct; j++)  //for every step of the program
 	    			{
-
+	    				ESP_LOGI(TAG, "controll\n");
 	    				len_recv_struct=recv(sock,recv_struct, sizeof(recv_struct)-1, 0);  //poluchavam structura
+	    				ESP_LOGI(TAG, "len_recv_struct=%d\n", len_recv_struct);
 	    				recv_struct[len_recv_struct]=0;
-//	    				for(int jj=0 ; jj<len_recv_struct; jj++)
-//	    				{
-//	    					ESP_LOGI(TAG, "recv_strcut: byte %d dec %d hex %x chr %c \n", jj,recv_struct[jj],recv_struct[jj],recv_struct[jj]);
-//	    				}
-//	    				ESP_LOGI(TAG, "recv_strcut: %s\n", recv_struct);
-//	    				ESP_LOGI(TAG, "recv_strcut 3: %x\n", recv_struct[3]);
-//	    				ESP_LOGI(TAG, "recv_strcut 2: %x\n", recv_struct[2]);
-//	    				ESP_LOGI(TAG, "recv_strcut 1: %x\n", recv_struct[1]);
-//	    				ESP_LOGI(TAG, "recv_strcut 0: %x\n", recv_struct[0]);
-	    				tmp_struct_transf=convertExpMantissToFloat(recv_struct[0], recv_struct[1], recv_struct[2], recv_struct[3]);  //probrazuwam byte array kym chisla
-	    				ESP_LOGI(TAG, "recv_strcut converted: %f\n", tmp_struct_transf);
+	    				tmpParamReadStruct.kd=convertExpMantissToFloat(recv_struct[0], recv_struct[1], recv_struct[2], recv_struct[3]);
+	    				printf("%d tmpParamReadStruct.kd=%f\n", j, tmpParamReadStruct.kd);
+	    				tmpParamReadStruct.kid=convertExpMantissToFloat(recv_struct[4], recv_struct[5], recv_struct[6], recv_struct[7]);
+	    				printf("%d tmpParamReadStruct.kid=%f\n", j, tmpParamReadStruct.kid);
+	    				tmpParamReadStruct.kp=convertExpMantissToFloat(recv_struct[8], recv_struct[9], recv_struct[10], recv_struct[11]);
+	    				printf("%d tmpParamReadStruct.kp=%f\n", j, tmpParamReadStruct.kp);
+	    				tmpParamReadStruct.limit=convertExpMantissToFloat(recv_struct[12], recv_struct[13], recv_struct[14], recv_struct[15]);
+	    				printf("%d tmpParamReadStruct.limit=%f\n", j, tmpParamReadStruct.limit);
+	    				//tmpParamReadStruct.rele1On=recv_struct[16];
+	    				//tmpParamReadStruct.rele3On=recv_struct[17];
+	    				tmpParamReadStruct.rele1On=0;
+	    				tmpParamReadStruct.rele3On=0;
+	    				tmpParamReadStruct.time=convertExpMantissToFloat(recv_struct[18], recv_struct[19], recv_struct[20], recv_struct[21]);
+	    				printf("%d tmpParamReadStruct.time=%f\n", j, tmpParamReadStruct.time);
+	    				tmpParamReadStruct.timeStart=convertExpMantissToFloat(recv_struct[22], recv_struct[23], recv_struct[24], recv_struct[25]);
+	    				printf("%d tmpParamReadStruct.timeStart=%f\n", j, tmpParamReadStruct.timeStart);
+	    				tmpParamReadStruct.timeStop=convertExpMantissToFloat(recv_struct[26], recv_struct[27], recv_struct[28], recv_struct[29]);
+	    				printf("%d tmpParamReadStruct.timestop=%f\n", j, tmpParamReadStruct.timeStop);
+	    				tmpParamReadStruct.zadanie=convertExpMantissToFloat(recv_struct[30], recv_struct[31], recv_struct[32], recv_struct[33]);
+	    				printf("%d tmpParamReadStruct.zadanie=%f\n", j, tmpParamReadStruct.zadanie);
 
-	    				tmp_struct_transf2=convertExpMantissToFloat(recv_struct[4], recv_struct[5], recv_struct[6], recv_struct[7]);  //probrazuwam byte array kym chisla
-	    				ESP_LOGI(TAG, "recv_strcut converted 2 : %f\n", tmp_struct_transf2);
-
-	    				tmp_struct_transf3=convertExpMantissToFloat(recv_struct[8], recv_struct[9], recv_struct[10], recv_struct[11]);  //probrazuwam byte array kym chisla
-	    				ESP_LOGI(TAG, "recv_strcut converted 3: %f\n", tmp_struct_transf3);
-
-	    				tmp_struct_transf4=convertExpMantissToFloat(recv_struct[12], recv_struct[13], recv_struct[14], recv_struct[15]);  //probrazuwam byte array kym chisla
-	    				ESP_LOGI(TAG, "recv_strcut converted 4: %f\n", tmp_struct_transf4);
+	    				tmpProgReadStruct.program.push_back(tmpParamReadStruct);
 	    			}
+
+	    			addProg(tmpProgReadStruct);
+
+
 	    		}
 //	    		setCurrentParam(tmpParam);
 //	    		//setKp(atof(set_kp_value)); // da prpwerq dali naistina e float dali ima tochka i chisla
@@ -212,6 +256,24 @@ void comunication_commands(const int sock)
 	} while (len > 0);
 
 }
+
+
+
+
+
+// length of the string
+int len(std::string str)
+{
+    int length = 0;
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        length++;
+
+    }
+    return length;
+}
+
+
 
 void tcp_server_task(void *pvParameters)
 {
