@@ -28,6 +28,7 @@ struct cmd_struct
 { PROGSTEPSNUMB, "nameStepProgs=" },
 { PRINTVECT, "vect?" },
 { GETPROGRAMS, "programs=" },
+{ GETOPPARAM, "opparam" },
 { -1, NULL } };
 
 /**
