@@ -25,7 +25,7 @@ void delAllProgs(void);
 void addProg(ProgramStruct tobeadd);
 std::vector<ProgramStruct> getProgram (void);
 void debugProg(void);
-
+void startProgram(std::string nameDesiredPrg);
 
 
 

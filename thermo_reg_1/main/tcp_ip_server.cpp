@@ -165,6 +165,20 @@ void comunication_commands(const int sock)
 	    		}
 
 	    		break;
+
+	    	case PICK:
+	    		pch=strstr(command_mssg, "=");
+	    		if(pch!=NULL)
+	    		{
+	    			pch=strstr(pch, "=");
+	    			printf("pch=%s\n", pch);
+	    			//pch+1="prog1"
+	    			std::string desiredProg=pch+1;
+	    			startProgram( desiredProg.substr(0, desiredProg.find("\n", 0)));
+
+	    		}
+
+	    		break;
 	    	case TRANSFERSTRUCT:
 	    		delAllProgs();
 	    		//ESP_LOGI(TAG, "write msg: %s\n", command_mssg);
@@ -232,11 +246,11 @@ void comunication_commands(const int sock)
 	    				p_begin_prog=p_begin_prog+1;
 	    				tmpParamReadStruct.rele1On=0;
 	    				tmpParamReadStruct.rele3On=0;
-	    				tmpParamReadStruct.timeStart=convertExpMantissToFloat(*(p_begin_prog), *(p_begin_prog+1), *(p_begin_prog+2), *(p_begin_prog+3));
-	    				printf("%d tmpParamReadStruct.timeStart=%f pointer=%p\n", j, tmpParamReadStruct.timeStart, p_begin_prog);
-	    				p_begin_prog=p_begin_prog+4;
 	    				tmpParamReadStruct.time=convertExpMantissToFloat(*(p_begin_prog), *(p_begin_prog+1), *(p_begin_prog+2), *(p_begin_prog+3));
-	    				printf("%d tmpParamReadStruct.time=%f pointer=%p\n", j, tmpParamReadStruct.time, p_begin_prog);
+	    				printf("%d tmpParamReadStruct.timeStart=%f pointer=%p\n", j, tmpParamReadStruct.time, p_begin_prog);
+	    				p_begin_prog=p_begin_prog+4;
+	    				tmpParamReadStruct.timeStart=convertExpMantissToFloat(*(p_begin_prog), *(p_begin_prog+1), *(p_begin_prog+2), *(p_begin_prog+3));
+	    				printf("%d tmpParamReadStruct.time=%f pointer=%p\n", j, tmpParamReadStruct.timeStart, p_begin_prog);
 	    				p_begin_prog=p_begin_prog+4;
 	    				tmpParamReadStruct.timeStop=convertExpMantissToFloat(*(p_begin_prog), *(p_begin_prog+1), *(p_begin_prog+2), *(p_begin_prog+3));
 	    				printf("%d tmpParamReadStruct.timestop=%f pointer=%p\n", j, tmpParamReadStruct.timeStop, p_begin_prog);

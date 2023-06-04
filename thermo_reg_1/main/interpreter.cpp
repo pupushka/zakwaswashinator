@@ -29,6 +29,7 @@ struct cmd_struct
 { PRINTVECT, "vect?" },
 { GETPROGRAMS, "programs=" },
 { GETOPPARAM, "opparam" },
+{ PICK, "picked=" },
 { -1, NULL } };
 
 /**

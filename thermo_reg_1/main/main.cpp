@@ -30,6 +30,9 @@ std::vector<OperationParam> currentProg;
 std::vector<ProgramStruct> programs;
 
 float temp;
+bool programStarted;
+time_t timeStart;
+
 
 extern "C"
 
@@ -51,6 +54,8 @@ void app_main (void)
 
   setenv("TZ", "EST-2", 1);
   tzset();
+
+  programStarted=false;
 
   gpio_set_level (LIGHT_PWM, 1);
   gpio_set_level (SWITCH_2, 0);
@@ -94,14 +99,37 @@ void app_main (void)
 
       //rtc
       countTime++;
+      time(&now);
+
       if(countTime>10)
 	{
 	  countTime=0;
-	  time(&now);
 	  localtime_r(&now, &timeinfo);
 	  strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
 	  printf( "The current date/time in Bulgaria is: %s \n", strftime_buf);
 	}
+      //Measure time between start and current moment in seconds
+      uint64_t deltaStartInt=now-timeStart;
+      //printf("now=%lld timeStart=%lld\n", now, timeStart);
+      float deltaStartFloat = static_cast<float>(deltaStartInt);
+
+      if(programStarted)
+      {
+
+    	  printf("starrting the program\n");
+    	  programStarted = false;
+		  for(uint z=0; z<currentProg.size(); z++)
+		  {
+			  printf("currentProg[z].timeStart=%f deltaStartFloat=%f deltaStartInt=%lld currentProg[z].timeStop=%f\n", currentProg[z].timeStart, deltaStartFloat, deltaStartInt, currentProg[z].timeStop);
+			  if((currentProg[z].timeStart<=deltaStartFloat) && (currentProg[z].timeStop>deltaStartFloat))
+			  {
+				  printf("wliam\n");
+				  programStarted = true;
+				  currentParam = currentProg[z];
+				  printf("currentParam zadanie = %f\ currentProg zadanie = %f \n", currentParam.zadanie, currentProg[z].zadanie);
+			  }
+		  }
+      }
 
       setZad(currentParam.zadanie);
       setKp(currentParam.kp);
@@ -271,6 +299,7 @@ float getMeasTemp (void)
 }
 
 
+
 OperationParam getCurrentParam (void)
 {
   return currentParam;
@@ -382,5 +411,31 @@ void debugProg(void)
 void delAllProgs(void)
 {
 	programs.clear();
+}
+
+void startProgram(std::string nameDesiredPrg)
+{
+	//std::vector<OperationParam> currentProg;
+	printf("desired prog: %s\n", nameDesiredPrg.c_str());
+	for(uint i=0; i<programs.size(); i++)
+	{
+		printf("progs[i]=%s desired=%s strcmp=%d\n", programs[i].progName.c_str(), nameDesiredPrg.c_str(), strcmp(programs[i].progName.c_str(), nameDesiredPrg.c_str()));
+
+		if(!strcmp(programs[i].progName.c_str(), nameDesiredPrg.c_str()))
+		{
+			printf("hm1\n");
+			currentProg=programs[i].program;
+			time(&timeStart);
+			float currentTimeShift;
+			currentTimeShift = 0;
+			for(uint j=0; j < currentProg.size(); j++)
+			{
+				currentProg[j].timeStart=currentTimeShift;
+				currentTimeShift=currentTimeShift+currentProg[j].time;
+				currentProg[j].timeStop=currentTimeShift;
+			}
+			programStarted=true;
+		}
+	}
 }
 
